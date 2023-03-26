@@ -42,6 +42,8 @@ AppAsset::register($this);
         $menuItems = [
             ['label' => 'Normal Search', 'url' => ['/site/index']],
             ['label' => 'CSV File Search', 'url' => ['/site/file']],
+            ['label' => 'Pro 65', 'url' => ['/site/pro65']],
+            ['label' => 'EU Product Recalls', 'url' => ['/site/recalls']],
             ['label' => 'Clear File Search', 'url' => ['/site/clear']],
             ['label' => 'Logout', 'url' => ['/site/logout']],
         ];

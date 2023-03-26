@@ -28,7 +28,7 @@ $this->title = 'European Union';
                     ]
                 ])->label(false);?>
             <?php ActiveForm::end(); ?>
-            
+
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
@@ -48,7 +48,7 @@ $this->title = 'European Union';
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'template' =>  '{buttons}',
-                        'buttons' => [ 
+                        'buttons' => [
                             'buttons'=>function($url, $model, $key){
                                 return Html::a('<i class="fa fa-edit"> </i>', ['/australia/index', 'id' => $model['uid']], ['class' => 'btn btn-xs btn-primary','data-original-title'=>'Amend Record','data-toggle'=>'tooltip','data-placement'=>'top']);
                             }

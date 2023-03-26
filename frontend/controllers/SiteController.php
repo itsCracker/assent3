@@ -1,31 +1,26 @@
 <?php
+
 namespace frontend\controllers;
 
-use frontend\models\ResendVerificationEmailForm;
-use frontend\models\VerifyEmailForm;
 use Yii;
-use yii\base\InvalidArgumentException;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use common\models\LoginForm;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
-use app\models\CountriesSearch;
-use app\models\FileSearch;
 use app\models\CsvSearch;
-
-use ruskid\csvimporter\CSVImporter;
-use ruskid\csvimporter\CSVReader;
-use ruskid\csvimporter\ImportInterface;
-use ruskid\csvimporter\MultipleImportStrategy;
-use ruskid\csvimporter\MultipleUpdateStrategy;
-use ruskid\csvimporter\BaseImportStrategy;
-use yii\widgets\ActiveForm;
-use yii\helpers\Json;
 use yii\web\UploadedFile;
+use app\models\FileSearch;
+use common\models\LoginForm;
+use app\models\CountriesSearch;
+use backend\models\Pro65Search;
+use ruskid\csvimporter\CSVReader;
+use ruskid\csvimporter\CSVImporter;
+use frontend\models\VerifyEmailForm;
+use yii\web\BadRequestHttpException;
+use frontend\models\ResetPasswordForm;
+use yii\base\InvalidArgumentException;
+use backend\models\EuProductRecallsSearch;
+use frontend\models\PasswordResetRequestForm;
+use ruskid\csvimporter\MultipleImportStrategy;
+use frontend\models\ResendVerificationEmailForm;
+
 /**
  * Site controller
  */
@@ -67,9 +62,124 @@ class SiteController extends Controller
         }
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-                ]);
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    public function actionPro65($type = null)
+    {
+        if ($type != 'file') {
+            $searchModel = new \backend\models\Pro65Search();
+            if ($searchModel->load(Yii::$app->request->get())) {
+                $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            } else {
+                $dataProvider = null;
+            }
+            return $this->render('pro65', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        } else {
+            $searchModel = new Pro65Search();
+            $model = new FileSearch;
+            $importer = new CSVImporter;
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $dataProvider->query->where(['IN', 'alleged_violatior', FileSearch::find()->select(['name'])->where(['user_id' => Yii::$app->user->identity->id])]);
+
+            if ($model->load(Yii::$app->request->post())) {
+                FileSearch::deleteAll(['user_id' => Yii::$app->user->identity->id]);
+                $model->myfile = UploadedFile::getInstance($model, 'myfile');
+                $importer->setData(new CSVReader([
+                    'filename' => $model->myfile->tempName == null ? $model->myfile->name : $model->myfile->tempName,
+                    'fgetcsvOptions' => [
+                        'delimiter' => ','
+                    ]
+                ]));
+                $numberRowsAffected = $importer->import(new MultipleImportStrategy([
+                    'tableName' => FileSearch::tableName(),
+                    'className' => FileSearch::className(),
+                    'configs' => [
+                        [
+                            'attribute' => 'name',
+                            'value' => function ($line) {
+                                return strtoupper($line[0]);
+                            },
+                        ],
+                        [
+                            'attribute' => 'user_id',
+                            'value' => function ($line) {
+                                return Yii::$app->user->identity->id;
+                            },
+                        ],
+
+                    ],
+                ]));
+            }
+            return $this->render('pro65', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'model' => $model,
+            ]);
+        }
+    }
+    public function actionRecalls($type = null)
+    {
+        if ($type != 'file') {
+            $searchModel = new EuProductRecallsSearch();
+            if ($searchModel->load(Yii::$app->request->get())) {
+                $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            } else {
+                $dataProvider = null;
+            }
+
+            return $this->render('recalls', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        } else {
+            $searchModel = new EuProductRecallsSearch();
+            $model = new FileSearch;
+            $importer = new CSVImporter;
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $dataProvider->query->orFilterWhere(['IN', 'brand', FileSearch::find()->select(['name'])->where(['user_id' => Yii::$app->user->identity->id])])
+                        ->orFilterWhere(['IN', 'name', FileSearch::find()->select(['name'])->where(['user_id' => Yii::$app->user->identity->id])]);
+
+            if ($model->load(Yii::$app->request->post())) {
+                FileSearch::deleteAll(['user_id' => Yii::$app->user->identity->id]);
+                $model->myfile = UploadedFile::getInstance($model, 'myfile');
+                $importer->setData(new CSVReader([
+                    'filename' => $model->myfile->tempName == null ? $model->myfile->name : $model->myfile->tempName,
+                    'fgetcsvOptions' => [
+                        'delimiter' => ','
+                    ]
+                ]));
+                $numberRowsAffected = $importer->import(new MultipleImportStrategy([
+                    'tableName' => FileSearch::tableName(),
+                    'className' => FileSearch::className(),
+                    'configs' => [
+                        [
+                            'attribute' => 'name',
+                            'value' => function ($line) {
+                                return strtoupper($line[0]);
+                            },
+                        ],
+                        [
+                            'attribute' => 'user_id',
+                            'value' => function ($line) {
+                                return Yii::$app->user->identity->id;
+                            },
+                        ],
+
+                    ],
+                ]));
+            }
+            return $this->render('recalls', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'model' => $model,
+            ]);
+
+        }
     }
     public function actionFile()
     {
@@ -81,73 +191,83 @@ class SiteController extends Controller
         // $dataProvider = new ActiveDataProvider([
         //     'query' => UserProfile::find()->joinWith(['user(relation_name)'])->where(['<>','user.status',0])
         // ]);
-        $dataProvider->query->where(['IN', 'name', FileSearch::find()->select(['name'])->where(['user_id'=>Yii::$app->user->identity->id])]);
-                            //->orFilterWhere(['IN', 'alt_names', FileSearch::find()->select(['alias_name'])->where(['user_id'=>Yii::$app->user->identity->id])]);
-                            //->andFilterWhere(['IN', 'name', FileSearch::find()->select(['passpandt_details'])->where(['user_id'=>Yii::$app->user->identity->id])])
-                            // ->andFilterWhere(['IN', 'nationalities', FileSearch::find()->select(['nationalities'])->where(['user_id'=>Yii::$app->user->identity->id])])
-                            // ->andFilterWhere(['IN', 'citizenships', FileSearch::find()->select(['citizenships'])->where(['user_id'=>Yii::$app->user->identity->id])])
-                            // ->andFilterWhere(['IN', 'entity_number', FileSearch::find()->select(['entity_number'])->where(['user_id'=>Yii::$app->user->identity->id])]);
+        $dataProvider->query->where(['IN', 'name', FileSearch::find()->select(['name'])->where(['user_id' => Yii::$app->user->identity->id])]);
+        //->orFilterWhere(['IN', 'alt_names', FileSearch::find()->select(['alias_name'])->where(['user_id'=>Yii::$app->user->identity->id])]);
+        //->andFilterWhere(['IN', 'name', FileSearch::find()->select(['passpandt_details'])->where(['user_id'=>Yii::$app->user->identity->id])])
+        // ->andFilterWhere(['IN', 'nationalities', FileSearch::find()->select(['nationalities'])->where(['user_id'=>Yii::$app->user->identity->id])])
+        // ->andFilterWhere(['IN', 'citizenships', FileSearch::find()->select(['citizenships'])->where(['user_id'=>Yii::$app->user->identity->id])])
+        // ->andFilterWhere(['IN', 'entity_number', FileSearch::find()->select(['entity_number'])->where(['user_id'=>Yii::$app->user->identity->id])]);
         //$dataProvider->query->Where(['user_id'=>Yii::$app->user->identity->id]);
 
-        if($model->load(Yii::$app->request->post())){
-            FileSearch::deleteAll(['user_id'=>Yii::$app->user->identity->id]);
-          $model->myfile = UploadedFile::getInstance($model, 'myfile' );
-          $importer->setData(new CSVReader([
-              'filename' => $model->myfile->tempName == null? $model->myfile->name :$model->myfile->tempName,
-              'fgetcsvOptions' => [
-              'delimiter' => ','
-              ]
-          ]));
-          $numberRowsAffected = $importer->import(new MultipleImportStrategy([
+        if ($model->load(Yii::$app->request->post())) {
+            FileSearch::deleteAll(['user_id' => Yii::$app->user->identity->id]);
+            $model->myfile = UploadedFile::getInstance($model, 'myfile');
+            $importer->setData(new CSVReader([
+                'filename' => $model->myfile->tempName == null ? $model->myfile->name : $model->myfile->tempName,
+                'fgetcsvOptions' => [
+                    'delimiter' => ','
+                ]
+            ]));
+            $numberRowsAffected = $importer->import(new MultipleImportStrategy([
                 'tableName' => FileSearch::tableName(),
                 'className' => FileSearch::className(),
                 'configs' => [
                     [
-                      'attribute' => 'name',
-                      'value' => function($line) {return strtoupper($line[1]); },
+                        'attribute' => 'name',
+                        'value' => function ($line) {
+                            return strtoupper($line[1]);
+                        },
                     ],
                     [
-                      'attribute' => 'alias_name',
-                      'value' => function($line) {return strtoupper($line[2]); },
+                        'attribute' => 'alias_name',
+                        'value' => function ($line) {
+                            return strtoupper($line[2]);
+                        },
                     ],
                     [
-                      'attribute' => 'passport_details',
-                      'value' => function($line) {return strtoupper($line[3]); },
+                        'attribute' => 'passport_details',
+                        'value' => function ($line) {
+                            return strtoupper($line[3]);
+                        },
                     ],
                     [
-                      'attribute' => 'nationalities',
-                      'value' => function($line) {return strtoupper($line[4]); },
+                        'attribute' => 'nationalities',
+                        'value' => function ($line) {
+                            return strtoupper($line[4]);
+                        },
                     ],
                     [
-                      'attribute' => 'citizenships',
-                      'value' => function($line) {return strtoupper($line[5]); },
+                        'attribute' => 'citizenships',
+                        'value' => function ($line) {
+                            return strtoupper($line[5]);
+                        },
                     ],
                     [
-                      'attribute' => 'entity_number',
-                      'value' => function($line) {return strtoupper($line[6]); },
+                        'attribute' => 'entity_number',
+                        'value' => function ($line) {
+                            return strtoupper($line[6]);
+                        },
                     ],
                     [
-                      'attribute' => 'user_id',
-                      'value' => function($line) {return Yii::$app->user->identity->id; },
+                        'attribute' => 'user_id',
+                        'value' => function ($line) {
+                            return Yii::$app->user->identity->id;
+                        },
                     ],
 
-                  ],
-              ]));
-
+                ],
+            ]));
         }
         return $this->render('file', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'model' => $model,
         ]);
-
-
     }
     public function actionClear()
     {
         FileSearch::deleteAll(['user_id' => Yii::$app->user->identity->id]);;
-        return $this->redirect(['/site/file']);
-
+        return $this->redirect(['index']);
     }
 
     /**
@@ -163,7 +283,7 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-          return $this->goBack();
+            return $this->goBack();
         } else {
             $model->password = '';
             return $this->render('login', [
@@ -189,23 +309,6 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
-            }
-
-            return $this->refresh();
-        } else {
-            return $this->render('contact', [
-                'model' => $model,
-            ]);
-        }
-    }
     public function actionRequestPasswordReset()
     {
         $model = new PasswordResetRequestForm();

@@ -26,7 +26,7 @@ AppAsset::register($this);
 <div class="wrapper">
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    
+
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
@@ -64,70 +64,82 @@ AppAsset::register($this);
       <nav class="mt-2">
       	<?=\yii\bootstrap\Nav::widget([
                     'options' => ['class' => 'nav-pills nav-sidebar flex-column', 'data-widget'=>'treeview', 'role'=>'menu', 'data-accordion'=>'false'],
-                    'items' => [ 
-                            [ 
-                                'label' => '<i class="fas fa-paw nav-icon"></i> <p>Dashboard</p>', 
-                                'url' => ['/site/index'], 
+                    'items' => [
+                            [
+                                'label' => '<i class="fas fa-paw nav-icon"></i> <p>Dashboard</p>',
+                                'url' => ['/site/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-cubes nav-icon"></i> <p>Australia</p>', 
-                                'url' => ['/australia/index'], 
+                            [
+                                'label' => '<i class="fas fa-cubes nav-icon"></i> <p>Australia</p>',
+                                'url' => ['/australia/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-canadian-maple-leaf nav-icon"></i> <p>Canada</p>', 
-                                'url' => ['/canada/index'], 
+                            [
+                                'label' => '<i class="fas fa-canadian-maple-leaf nav-icon"></i> <p>Canada</p>',
+                                'url' => ['/canada/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-flag nav-icon"></i> <p>China</p>', 
-                                'url' => ['/china/index'], 
+                            [
+                                'label' => '<i class="fas fa-flag nav-icon"></i> <p>China</p>',
+                                'url' => ['/china/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-flag-checkered nav-icon"></i> <p>European Union</p>', 
-                                'url' => ['/eu/index'], 
+                            [
+                                'label' => '<i class="fas fa-flag-checkered nav-icon"></i> <p>European Union</p>',
+                                'url' => ['/eu/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-circle nav-icon"></i> <p>Japan</p>', 
-                                'url' => ['/japan/index'], 
+                            [
+                                'label' => '<i class="fas fa-circle nav-icon"></i> <p>Japan</p>',
+                                'url' => ['/japan/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-chess-king nav-icon"></i> <p>United Kingdom</p>', 
-                                'url' => ['/uk/index'], 
+                            [
+                                'label' => '<i class="fas fa-chess-king nav-icon"></i> <p>United Kingdom</p>',
+                                'url' => ['/uk/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-flag-usa nav-icon"></i> <p>USA</p>', 
-                                'url' => ['/usa/index'], 
+                            [
+                                'label' => '<i class="fas fa-flag-usa nav-icon"></i> <p>USA</p>',
+                                'url' => ['/usa/index'],
                                 'linkOptions' => ['class'=>'nav-link'],
                                 'options'=>['class'=>'nav-item'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-users nav-icon"></i> <p>Users</p>', 
+                            [
+                                'label' => '<i class="fas fa-boxes nav-icon"></i> <p>EU Product Recalls</p>',
+                                'url' => ['/eu-product-recalls/index'],
+                                'linkOptions' => ['class'=>'nav-link'],
+                                'options'=>['class'=>'nav-item'],
+                            ],
+                            [
+                                'label' => '<i class="fas fa-code nav-icon"></i> <p>Pro 65</p>',
+                                'url' => ['/pro65/index'],
+                                'linkOptions' => ['class'=>'nav-link'],
+                                'options'=>['class'=>'nav-item'],
+                            ],
+                            [
+                                'label' => '<i class="fas fa-users nav-icon"></i> <p>Users</p>',
                                 'url' => ['/site/users'],
-                                'linkOptions' => ['class'=>'nav-link'], 
+                                'linkOptions' => ['class'=>'nav-link'],
                             ],
-                            [ 
-                                'label' => '<i class="fas fa-lock nav-icon"></i> <p>Logout</p>', 
+                            [
+                                'label' => '<i class="fas fa-lock nav-icon"></i> <p>Logout</p>',
                                 'url' => ['/site/logout'],
-                                'linkOptions' => ['class'=>'nav-link'], 
+                                'linkOptions' => ['class'=>'nav-link'],
                             ],
                     ],
                     'activateItems'=>true,
                     'encodeLabels' => false,
                 ]);?>
-        
+
       </nav>
       <!-- /.sidebar-menu -->
     </div>
@@ -152,7 +164,7 @@ AppAsset::register($this);
   <footer class="main-footer">
     <strong>Copyright &copy; <?=date('Y')?> <a href="https://www.assentcompliance.com/">Assent Compliance Inc.</a>.</strong>
     All rights reserved.
-    
+
   </footer>
 </div>
 
