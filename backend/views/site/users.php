@@ -44,7 +44,7 @@ $this->title = 'System Users';
                         'header' => Html::a('<i class="fa fa-plus"> </i>', ['/site/manage'], ['class' => 'btn btn-xs btn-primary']),
                         'buttons' => [ 
                             'buttons'=>function($url, $model, $key){
-                                return Html::a('<i class="fa fa-edit"> </i>', ['/site/manage', 'id' => $model['id']], ['class' => 'btn btn-xs btn-primary','data-original-title'=>'Amend Record','data-toggle'=>'tooltip','data-placement'=>'top']);
+                                return Html::a('<i class="fa fa-edit"> </i>', ['/site/update', 'id' => $model['id']], ['class' => 'btn btn-xs btn-primary','data-original-title'=>'Amend Record','data-toggle'=>'tooltip','data-placement'=>'top']);
                             }
                                 ]
 

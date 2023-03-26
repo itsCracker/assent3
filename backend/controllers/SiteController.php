@@ -75,6 +75,20 @@ class SiteController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+    public function actionUpdate($id)
+    {
+        $model = \backend\models\AssentUsers::findOne($id);
+        if ($model->load(Yii::$app->request->post())) {
+            
+            if($model->save(false)){
+                Yii::$app->session->setFlash('success', 'User updated successfully');
+                return $this->redirect(['/site/users']);
+            }
+        }
+        return $this->render('_form', [
+            'model' => $model,
+        ]);
+    }
     public function actionManage()
     {
         $model = new User;
